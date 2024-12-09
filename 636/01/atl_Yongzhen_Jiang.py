@@ -15,6 +15,7 @@ def list_all_customers():
     Lists customer details.
     This is an example of how to produce basic output."""
 
+    # Move display code into a function so that it could be reused by other functions
     display_all_customer()
 
     input("\nPress Enter to continue.")
@@ -24,7 +25,10 @@ def list_customers_by_tourgroup():
     """
     Lists Customer details (including birth date), grouped by tour then tour group."""
 
+    # Get tour groups
     tour_groups = get_tour_groups()
+    
+    # Display tour groups
     display_customer_by_tour_group(tour_groups)
 
     input("\nPress Enter to continue.")
@@ -34,7 +38,10 @@ def list_tour_details():
     """
     List the tours and all locations visited."""
     
+    # Sort tours
     tours_sorted = sorted(tours.items(), key=lambda x: x[0])
+    
+    # Display sorted tours
     display_tour_details(tours_sorted)
     
     input("\nPress Enter to continue.")
@@ -64,9 +71,10 @@ def add_customer_to_tourgroup():
         except ValueError:
             print("Please input an integer.\n")
     
+    # Get tour groups
     tour_groups = get_tour_groups()
 
-    # display tour group list
+    # Display tour groups
     display_tour_groups(tour_groups)
 
     # Input and validate tour group
@@ -94,6 +102,7 @@ def add_customer_to_tourgroup():
         except ValueError:
             print("Please input an integer.\n")
 
+    # Internal function to add cutomer into tour group
     _add_customer_to_tourgroup(customer_id, tour_group_no, tour_groups)
 
     print('The customer has been added to the tour group successfully.\n')
@@ -105,6 +114,7 @@ def add_new_customer():
     """
     Add a new customer to the customer list."""
 
+    # User can add new customer repeatedly
     while True:
         first_name = get_input("Please input first name (input :q to quit):\n")
         if first_name == ":q":
@@ -128,6 +138,10 @@ def add_new_customer():
 
 
 def get_input(prompt, validation=None):
+    """
+    Receiver user input and validate date or email.
+    This function is used for add new customer (First Name, Last Name, Birth Date, Email)."""
+
     while True:
         input_string = input(prompt).strip()
 
@@ -151,15 +165,18 @@ def get_input(prompt, validation=None):
 
 
 def _add_new_customer(new_customer):
+    """
+    Add new customer into customers"""
+
     customers.append([unique_id(), *new_customer])
 
 
 def list_all_destinations():
     """
-    List all destinations that ATL Visit and the tours that visit them
-    """
-    destinations = get_all_destinations()
-    print_destinations(destinations)
+    List all destinations that ATL Visit and the tours that visit them"""
+
+    destinations = get_all_destinations_with_tour()
+    display_destinations_with_tour(destinations)
 
     input("\nPress Enter to continue.")
 
@@ -213,6 +230,9 @@ print("\n=== Thank you for using the AOTEAROA TOURS MANAGEMENT SYSTEM! ===\n")
 
 # ------------ Internal functions below ------------------------
 def display_all_customer():
+    """
+    Display all customer"""
+
     print('-'*96)
     format_str = "| {: <5} | {: <15} | {: <15} | {: <15} | {: <30} |"            # Use the same format_str for column headers and rows to ensure consistent spacing. 
     display_formatted_row(["ID","First Name","Family Name","Birth Date","E-Mail"],format_str)     # Use the display_formatted_row() function to display the column headers with consistent spacing
@@ -228,6 +248,8 @@ def display_all_customer():
 
 
 def display_tour_groups(tour_groups):
+    """
+    Display tour groups"""
 
     print()
     print("-"*63)
@@ -241,16 +263,16 @@ def display_tour_groups(tour_groups):
 
 def is_email(email):
     """
-    Check email address format using regex
-    """
+    Check email address format using regex"""
+
     email_patter = r'^\S+@\S+\.\S+$'
     return re.match(email_patter, email)
 
 
 def is_valid_date(birth_date):
     """
-    Check whether the birth date is a valid date
-    """
+    Check whether the birth date is a valid date"""
+
     try:
         birth_date = datetime.strptime(birth_date, '%d/%m/%Y')
 
@@ -266,8 +288,8 @@ def is_valid_date(birth_date):
 
 def yearsago(years, current_date=None):
     """
-    Calcuate the date which is N years ago
-    """
+    Calcuate the date which is N years ago"""
+
     if current_date is None:
         current_date = datetime.today().date()
 
@@ -280,30 +302,30 @@ def yearsago(years, current_date=None):
 
 def is_customer_id_existed(id):
     """
-    Check whether the customer id is already existed 
-    """
+    Check whether the customer id is already existed"""
+
     ids = [c[0] for c in customers]
     return id in ids
 
 
 def is_tour_group_existed(tour_group_no, tour_groups):
     """
-    Check whether the tour group which user selects is within the available groups
-    """
+    Check whether the tour group which user selects is within the available groups"""
+
     return tour_group_no > 0 and tour_group_no <= len(tour_groups)
 
 
 def is_customer_already_in_tour_group(customer_id, tour_group_no, tour_groups):
     """
-    Check whether the customer id is already existed in the tour group
-    """
+    Check whether the customer id is already existed in the tour group"""
+
     return customer_id in tour_groups[tour_group_no - 1][1][1]
 
 
 def is_customer_age_valid(customer_id, tour_group_no, tour_groups):
     """
-    Check whether the age of the customer is equal or larger than the restricted age
-    """
+    Check whether the age of the customer is equal or larger than the restricted age"""
+
     date_of_birth = [c[3] for c in customers if c[0] == customer_id][0]
     age_restricted = tour_groups[tour_group_no - 1][1][0]
 
@@ -312,16 +334,16 @@ def is_customer_age_valid(customer_id, tour_group_no, tour_groups):
 
 def get_customer_age(birthday):
     """
-    Get the customer's age
-    """
+    Get the customer's age"""
+
     today = date.today()
     return today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
 
 
 def _add_customer_to_tourgroup(customer_id, tour_group_no, tour_groups):
     """
-    Add the customer into the tour group selected
-    """
+    Add the customer into the tour group selected"""
+
     group_date = tour_groups[tour_group_no - 1][0][1]
     new_group_member = tour_groups[tour_group_no - 1][1][1] + [customer_id]
 
@@ -335,8 +357,7 @@ def _add_customer_to_tourgroup(customer_id, tour_group_no, tour_groups):
 def get_tour_groups():
     """
     Re-structure tours data, grouped by pair of (tour_name, tour_date), and sorted by tour_name ascending, tour_date ascending.
-    Because pair of (tour_name, tour_date) is unique.
-    """
+    Because pair of (tour_name, tour_date) is unique."""
 
     # Transform tours data into a dictionary with (tour_name, tour_date) as key, and (age_restriction, customer_member_list) as value
     # Data structure would be like: {('WestEurope', date(2023,8,15)): (0, [810,801])}
@@ -356,8 +377,8 @@ def get_tour_groups():
 
 def display_customer_by_tour_group(tour_groups):
     """
-    Display customers grouped by tour group
-    """
+    Display customers grouped by tour group"""
+
     customers_dict = get_customers_dict(customers)
 
     for tg in tour_groups:
@@ -372,21 +393,28 @@ def display_customer_by_tour_group(tour_groups):
 
 def display_tour_details(tours):
     """
-    Display tour details
-    """
+    Display tour details"""
+
     for tour in tours:
         print(tour[0])
         print(', '.join(tour[1]['itinerary']))
 
 
-def get_all_destinations():
+def get_all_destinations_with_tour():
+    """
+    Get all destinations, each with a tour list whose itinerary contains this destination
+    """
+
     destinations = set()
 
+    # Add all destinations into a set (so there's no duplicate destination)
     for tour in tours.items():
         destinations |= set(tour[1]['itinerary'])
 
+    # Sort destinations by name ascending
     destinations = sorted(destinations)
 
+    # Create a list of touple, each tuple is a pair of (destination, tour_list)
     destinations_tour = []
     for d in destinations:
         tour_list = []
@@ -399,16 +427,19 @@ def get_all_destinations():
     return destinations_tour
 
 
-def print_destinations(destintions):
+def display_destinations_with_tour(destintions):
+    """
+    Display destinations"""
+
     for d, t in destintions:
         print(d, t)
 
 
 def get_datetime(dt):
     """
-    Convert date to datetime since the tour date in atl_data might be date or datetime.
-    Use datetime to compare tour date.
-    """
+    Convert date to datetime since tour date in the source data might be date or datetime
+    Use datetime to compare tour date"""
+
     if type(dt) == date:
         return datetime(dt.year, dt.month, dt.day)
     else:
@@ -417,7 +448,7 @@ def get_datetime(dt):
 
 def get_customers_dict(customers):
     """
-    Convert customer list to dictionary, customer id as the key
-    This is to quick find customer by customer id
-    """
+    Convert customer list to dictionary, using customer id as the key.
+    The purpose is to find customer by customer id quickly"""
+
     return {c[0]: (c[1], c[2], c[3], c[4]) for c in customers}
