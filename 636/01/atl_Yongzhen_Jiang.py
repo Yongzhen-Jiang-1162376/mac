@@ -72,23 +72,28 @@ def add_customer_to_tourgroup():
     # Input and validate tour group
     while True:
         tour_group_no = input("Plese input the tour group number (input c to cancel): ")
+        
         if tour_group_no.lower() == "c":
             input("\nPress Enter to continue.")
             return
-        
+
         try:
             tour_group_no = int(tour_group_no)
             if not is_tour_group_existed(tour_group_no, tour_groups):
                 print("Tour group number is not correct. Please try again (input c to cancel).\n")
+
             elif is_customer_already_in_tour_group(customer_id, tour_group_no, tour_groups):
                 print("Customer already in this tour group. Please try again (input c to cancel).\n")
+
             elif not is_customer_age_valid(customer_id, tour_group_no, tour_groups):
                 print("Customer is younger than the age restricted. Please try again (input c to cancel).\n")
+
             else:
                 break
+
         except ValueError:
             print("Please input an integer.\n")
-    
+
     _add_customer_to_tourgroup(customer_id, tour_group_no, tour_groups)
 
     print('The customer has been added to the tour group successfully.\n')
