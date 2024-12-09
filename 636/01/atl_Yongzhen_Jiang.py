@@ -14,7 +14,7 @@ def list_all_customers():
     """
     Lists customer details.
     This is an example of how to produce basic output."""
-    
+
     display_all_customer()
 
     input("\nPress Enter to continue.")
@@ -25,18 +25,20 @@ def list_customers_by_tourgroup():
     Lists Customer details (including birth date), grouped by tour then tour group."""
 
     tour_groups = get_tour_groups()
-    print_customer_by_tour_group(tour_groups)
+    display_customer_by_tour_group(tour_groups)
 
     input("\nPress Enter to continue.")
+
 
 def list_tour_details():
     """
     List the tours and all locations visited."""
     
     tours_sorted = sorted(tours.items(), key=lambda x: x[0])
-    print_tour_details(tours_sorted)
+    display_tour_details(tours_sorted)
     
     input("\nPress Enter to continue.")
+
 
 def add_customer_to_tourgroup():
     """
@@ -98,8 +100,6 @@ def add_new_customer():
     """
     Add a new customer to the customer list."""
 
-    print('Add new customers now................')
-
     while True:
         first_name = get_input("Please input first name (input :q to quit):\n")
         if first_name == ":q":
@@ -117,12 +117,9 @@ def add_new_customer():
         if email == ":q":
             return
 
-        print(first_name, last_name, birth_date, email)
-
         _add_new_customer([first_name, last_name, birth_date, email])
 
         print("Cutomer has successfully added. Continue to add another customer.\n")
-        # break
 
 
 def get_input(prompt, validation=None):
@@ -151,6 +148,7 @@ def get_input(prompt, validation=None):
 def _add_new_customer(new_customer):
     customers.append([unique_id(), *new_customer])
 
+
 def list_all_destinations():
     """
     List all destinations that ATL Visit and the tours that visit them
@@ -159,6 +157,7 @@ def list_all_destinations():
     print_destinations(destinations)
 
     input("\nPress Enter to continue.")
+
 
 def disp_menu():
     """
@@ -207,10 +206,7 @@ print("\n=== Thank you for using the AOTEAROA TOURS MANAGEMENT SYSTEM! ===\n")
 
 
 
-
-
 # ------------ Internal functions below ------------------------
-
 def display_all_customer():
     print('-'*96)
     format_str = "| {: <5} | {: <15} | {: <15} | {: <15} | {: <30} |"            # Use the same format_str for column headers and rows to ensure consistent spacing. 
@@ -236,8 +232,6 @@ def display_tour_groups(tour_groups):
 
     for index, tg in enumerate(tour_groups):
         display_formatted_row([index + 1, tg[0][0], get_date(tg[0][1]).strftime("%d %b %Y")], format_str)
-    
-    # print(tour_groups[4])
 
 
 def is_email(email):
@@ -262,7 +256,7 @@ def is_valid_date(birth_date):
 def yearsago(years, current_date=None):
     if current_date is None:
         current_date = datetime.today().date()
-    
+
     try:
         return current_date.replace(year=current_date.year - years)
     except ValueError:
@@ -285,9 +279,6 @@ def is_customer_already_in_tour_group(customer_id, tour_group_no, tour_groups):
 
 def is_customer_age_valid(customer_id, tour_group_no, tour_groups):
     date_of_birth = [c[3] for c in customers if c[0] == customer_id][0]
-
-    print("DOB: ", date_of_birth)
-
     age_restricted = tour_groups[tour_group_no - 1][1][0]
 
     return get_customer_age(date_of_birth) >= age_restricted
@@ -313,15 +304,15 @@ def get_tour_groups():
     for tour in tours.items():
         for group in tour[1]['groups'].items():
             tour_groups.update({(tour[0], group[0]): (tour[1]["age_restriction"], group[1])})
-    
+
     tour_groups = sorted(tour_groups.items(), key=lambda x: get_date(x[0][1]))
 
     tour_groups = sorted(tour_groups, key=lambda x: x[0][0])
-    
+
     return tour_groups
 
 
-def print_customer_by_tour_group(tour_groups):
+def display_customer_by_tour_group(tour_groups):
     customers_dict = get_customers_dict(customers)
 
     for tg in tour_groups:
@@ -334,10 +325,11 @@ def print_customer_by_tour_group(tour_groups):
         print()
 
 
-def print_tour_details(tours):
+def display_tour_details(tours):
     for tour in tours:
         print(tour[0])
         print(', '.join(tour[1]['itinerary']))
+
 
 def get_all_destinations():
     destinations = set()
@@ -346,7 +338,6 @@ def get_all_destinations():
         destinations |= set(tour[1]['itinerary'])
 
     destinations = sorted(destinations)
-    # print(destinations)
 
     destinations_tour = []
     for d in destinations:
@@ -370,6 +361,7 @@ def get_date(dt):
         return dt.date()
     else:
         return dt
+
 
 def get_customers_dict(customers):
     """
