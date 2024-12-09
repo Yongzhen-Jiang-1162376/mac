@@ -65,7 +65,7 @@ def display_tour_groups(tour_groups):
     print()
     print("-"*63)
     format_str = "| {: <5} | {: <33} | {: <15} |"
-    display_formatted_row(['No', 'Tour Group', 'Tour Date'], format_str)
+    display_formatted_row(['No', 'Tour Group', 'Tour Date'], green(format_str))
     print("-"*63)
 
     for index, tg in enumerate(tour_groups):
@@ -192,12 +192,14 @@ def display_customer_by_tour_group(tour_groups):
 
     customers_dict = get_customers_dict(customers)
 
+    print()
+    
     for tg in tour_groups:
         print(tg[0][0], tg[0][1])
-        if len(tg[1]) == 0:
+        if len(tg[1][1]) == 0:
             print('None customer.')
         else:
-            for c in tg[1]:
+            for c in tg[1][1]:
                 print(customers_dict[c])
         print()
 
@@ -310,6 +312,8 @@ def list_customers_by_tourgroup():
 
     # Get tour groups
     tour_groups = get_tour_groups()
+    
+    # print(tour_groups)
     
     # Display tour groups
     display_customer_by_tour_group(tour_groups)
