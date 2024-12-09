@@ -72,7 +72,7 @@ def add_customer_to_tourgroup():
     # Input and validate tour group
     while True:
         tour_group_no = input("Plese input the tour group number (input c to cancel): ")
-        
+
         if tour_group_no.lower() == "c":
             input("\nPress Enter to continue.")
             return
@@ -236,15 +236,21 @@ def display_tour_groups(tour_groups):
     print("-"*63)
 
     for index, tg in enumerate(tour_groups):
-        display_formatted_row([index + 1, tg[0][0], get_date(tg[0][1]).strftime("%d %b %Y")], format_str)
+        display_formatted_row([index + 1, tg[0][0], get_datetime(tg[0][1]).strftime("%d %b %Y")], format_str)
 
 
 def is_email(email):
+    """
+    Check email address format using regex
+    """
     email_patter = r'^\S+@\S+\.\S+$'
     return re.match(email_patter, email)
 
 
 def is_valid_date(birth_date):
+    """
+    Check whether the birth date is a valid date
+    """
     try:
         birth_date = datetime.strptime(birth_date, '%d/%m/%Y')
 
@@ -259,6 +265,9 @@ def is_valid_date(birth_date):
 
 
 def yearsago(years, current_date=None):
+    """
+    Calcuate the date which is N years ago
+    """
     if current_date is None:
         current_date = datetime.today().date()
 
@@ -270,19 +279,31 @@ def yearsago(years, current_date=None):
 
 
 def is_customer_id_existed(id):
+    """
+    Check whether the customer id is already existed 
+    """
     ids = [c[0] for c in customers]
     return id in ids
 
 
 def is_tour_group_existed(tour_group_no, tour_groups):
+    """
+    Check whether the tour group which user selects is within the available groups
+    """
     return tour_group_no > 0 and tour_group_no <= len(tour_groups)
 
 
 def is_customer_already_in_tour_group(customer_id, tour_group_no, tour_groups):
+    """
+    Check whether the customer id is already existed in the tour group
+    """
     return customer_id in tour_groups[tour_group_no - 1][1][1]
 
 
 def is_customer_age_valid(customer_id, tour_group_no, tour_groups):
+    """
+    Check whether the age of the customer is equal or larger than the restricted age
+    """
     date_of_birth = [c[3] for c in customers if c[0] == customer_id][0]
     age_restricted = tour_groups[tour_group_no - 1][1][0]
 
@@ -290,11 +311,17 @@ def is_customer_age_valid(customer_id, tour_group_no, tour_groups):
 
 
 def get_customer_age(birthday):
+    """
+    Get the customer's age
+    """
     today = date.today()
     return today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
 
 
 def _add_customer_to_tourgroup(customer_id, tour_group_no, tour_groups):
+    """
+    Add the customer into the tour group selected
+    """
     group_date = tour_groups[tour_group_no - 1][0][1]
     new_group_member = tour_groups[tour_group_no - 1][1][1] + [customer_id]
 
@@ -304,20 +331,33 @@ def _add_customer_to_tourgroup(customer_id, tour_group_no, tour_groups):
         group_date: new_group_member
     })
 
+
 def get_tour_groups():
+    """
+    Re-structure tours data, grouped by pair of (tour_name, tour_date), and sorted by tour_name ascending, tour_date ascending.
+    Because pair of (tour_name, tour_date) is unique.
+    """
+
+    # Transform tours data into a dictionary with (tour_name, tour_date) as key, and (age_restriction, customer_member_list) as value
+    # Data structure would be like: {('WestEurope', date(2023,8,15)): (0, [810,801])}
     tour_groups = {}
     for tour in tours.items():
         for group in tour[1]['groups'].items():
             tour_groups.update({(tour[0], group[0]): (tour[1]["age_restriction"], group[1])})
 
-    tour_groups = sorted(tour_groups.items(), key=lambda x: get_date(x[0][1]))
+    # sort by group data ascending (use reverse=True to sort descending)
+    tour_groups = sorted(tour_groups.items(), key=lambda x: get_datetime(x[0][1]), reverse=False)
 
-    tour_groups = sorted(tour_groups, key=lambda x: x[0][0])
+    # sort by tour name ascending
+    tour_groups = sorted(tour_groups, key=lambda x: x[0][0], reverse=False)
 
     return tour_groups
 
 
 def display_customer_by_tour_group(tour_groups):
+    """
+    Display customers grouped by tour group
+    """
     customers_dict = get_customers_dict(customers)
 
     for tg in tour_groups:
@@ -331,6 +371,9 @@ def display_customer_by_tour_group(tour_groups):
 
 
 def display_tour_details(tours):
+    """
+    Display tour details
+    """
     for tour in tours:
         print(tour[0])
         print(', '.join(tour[1]['itinerary']))
@@ -361,9 +404,13 @@ def print_destinations(destintions):
         print(d, t)
 
 
-def get_date(dt):
-    if type(dt) == datetime:
-        return dt.date()
+def get_datetime(dt):
+    """
+    Convert date to datetime since the tour date in atl_data might be date or datetime.
+    Use datetime to compare tour date.
+    """
+    if type(dt) == date:
+        return datetime(dt.year, dt.month, dt.day)
     else:
         return dt
 
