@@ -37,16 +37,15 @@ def cyan(format_str):
     return format_str.replace("{", "\033[96m{").replace("}", "}\033[0m")
 
 # ----------------------- Start of Internal functions -----------------------
-def display_all_customer():
+def display_customer_list(customers):
     """
     Display all customer"""
 
-    print()
     print('-'*96)
     format_str = "| {: <5} | {: <15} | {: <15} | {: <15} | {: <30} |"            # Use the same format_str for column headers and rows to ensure consistent spacing. 
     display_formatted_row(["ID","First Name","Family Name","Birth Date","E-Mail"], green(format_str))     # Use the display_formatted_row() function to display the column headers with consistent spacing
     print('-'*96)
-    
+
     for customer in customers:
         id = customer[0]
         fname = customer[1]
@@ -300,8 +299,9 @@ def list_all_customers():
     Lists customer details.
     This is an example of how to produce basic output."""
 
+    print()
     # Move display code into a function so that it could be reused by other functions
-    display_all_customer()
+    display_customer_list(customers)
 
     input("\nPress Enter to continue.")
 
@@ -339,7 +339,7 @@ def add_customer_to_tourgroup():
     Choose a customer, then a tour & group, add customers to tour groups only if they meet the minimum age requirement """
 
     # display customer list
-    display_all_customer()
+    display_customer_list(customers)
     
     # Input and validate customer id
     while True:
