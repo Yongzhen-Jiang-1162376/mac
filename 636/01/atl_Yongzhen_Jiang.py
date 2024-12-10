@@ -46,14 +46,19 @@ def display_customer_list(customers):
     display_formatted_row(["ID","First Name","Family Name","Birth Date","E-Mail"], green(format_str))     # Use the display_formatted_row() function to display the column headers with consistent spacing
     print('-'*96)
 
-    for customer in customers:
-        id = customer[0]
-        fname = customer[1]
-        famname = customer[2]
-        birthdate = customer[3].strftime("%d %b %Y")
-        email = customer[4]
+    if len(customers) == 0:
+        display_formatted_row(['No Customer'], "| {: <92} |")
 
-        display_formatted_row([id,fname,famname,birthdate,email],format_str)     # Use the display_formatted_row() function to display each row with consistent spacing
+    else:
+        for customer in customers:
+            id = customer[0]
+            fname = customer[1]
+            famname = customer[2]
+            birthdate = customer[3].strftime("%d %b %Y")
+            email = customer[4]
+
+            display_formatted_row([id,fname,famname,birthdate,email],format_str)     # Use the display_formatted_row() function to display each row with consistent spacing
+
     print('-'*96)
 
 
@@ -62,13 +67,15 @@ def display_tour_groups(tour_groups):
     Display tour groups"""
 
     print()
-    print("-"*63)
-    format_str = "| {: <5} | {: <33} | {: <15} |"
+    print("-"*96)
+    format_str = "| {: <5} | {: <33} | {: <48} |"
     display_formatted_row(['No', 'Tour Group', 'Tour Date'], green(format_str))
-    print("-"*63)
+    print("-"*96)
 
     for index, tg in enumerate(tour_groups):
         display_formatted_row([index + 1, tg[0][0], get_datetime(tg[0][1]).strftime("%d %b %Y")], format_str)
+    
+    print("-"*96)
 
 
 def is_email(email):
@@ -93,7 +100,7 @@ def is_valid_date(birth_date):
         else:
             return birth_date.date()
     except ValueError:
-        return 'ValueError'
+        return 'Incorrect date format'
 
 
 def yearsago(years, current_date=None):
@@ -191,25 +198,45 @@ def display_customer_by_tour_group(tour_groups):
 
     customers_dict = get_customers_dict(customers)
 
-    print()
-    
     for tg in tour_groups:
-        print(tg[0][0], tg[0][1])
-        if len(tg[1][1]) == 0:
-            print('None customer.')
-        else:
-            for c in tg[1][1]:
-                print(customers_dict[c])
         print()
+
+        print('-'*96)
+        print('| Tour  |', end="")
+        display_tour_group_header(tg[0][0], tg[0][1])
+
+        if len(tg[1][1]) == 0:
+            display_customer_list([])
+        else:
+            customer_list = []
+            for c in tg[1][1]:
+                customer_list.append(customers_dict[c])
+            display_customer_list(customer_list)
+
+
+def display_tour_group_header(tour_name, tour_date):
+    """
+    Display tour group header"""
+
+    format_str = "{: <34} | {: <15} | {: <30} |"
+    display_formatted_row([tour_name, tour_date.strftime('%b %Y'), tour_date.strftime('%d %b %Y')], cyan(format_str))
 
 
 def display_tour_details(tours):
     """
     Display tour details"""
-
+    
     for tour in tours:
-        print(tour[0])
-        print(', '.join(tour[1]['itinerary']))
+        # print(tour[0])
+        print()
+        print('-'*109)
+        print('| Tour         |', end='')
+        display_formatted_row([tour[0]], cyan(" {: <90} |"))
+        print('-'*109)
+        print('| Destinations |', end='')
+        display_formatted_row([', '.join(tour[1]['itinerary'])], green(" {: <90} |"))
+        print('-'*109)
+        # print(', '.join(tour[1]['itinerary']))
 
 
 def get_all_destinations_with_tour():
@@ -243,8 +270,17 @@ def display_destinations_with_tour(destintions):
     """
     Display destinations"""
 
+    print()
+
+    format_str = "| {: <23} | {: <66} |"
+
+    print('-'*96)
+    display_formatted_row(["Destination", "Tour"], green(format_str))
+    print('-'*96)
+
     for d, t in destintions:
-        print(d, t)
+        display_formatted_row((d, ",".join(t)), format_str)
+    print('-'*96)
 
 
 def get_datetime(dt):
@@ -263,7 +299,7 @@ def get_customers_dict(customers):
     Convert customer list to dictionary, using customer id as the key.
     The purpose is to find customer by customer id quickly"""
 
-    return {c[0]: (c[1], c[2], c[3], c[4]) for c in customers}
+    return {c[0]: [c[0], c[1], c[2], c[3], c[4]] for c in customers}
 
 
 def print_red(s):
@@ -438,14 +474,18 @@ def get_input(prompt, validation=None):
         if input_string == "":
             print("Can not be empty.")
             continue
+
         elif validation == 'date':
             validation_result = is_valid_date(input_string)
             if type(validation_result) != date:
                 print(validation_result)
                 continue
+
             input_string = validation_result
+
         elif validation == 'email':
             if not is_email(input_string):
+                print("Incorrect email format")
                 continue
         break
     return input_string
