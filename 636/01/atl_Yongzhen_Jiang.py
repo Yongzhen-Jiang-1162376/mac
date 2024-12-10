@@ -564,4 +564,4 @@ while response != "X":
 
     print("")
 
-print("\n=== Thank you for using the AOTEAROA TOURS MANAGEMENT SYSTEM! ===\n")
+print("\n\033[94m=== Thank you for using the AOTEAROA TOURS MANAGEMENT SYSTEM! ===\033[0m\n")
