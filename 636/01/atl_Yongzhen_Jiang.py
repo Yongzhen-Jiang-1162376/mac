@@ -293,20 +293,21 @@ def display_destinations_with_tour(destintions):
 
     print()
 
-    format_str = "| {: <20} | {: <35} |"
+    format_str_header = '| {: <20} | {: <35} |'
+    format_str = "| \033[96m{: <20}\033[0m | \033[92m{: <35}\033[0m |"
 
     print('-'*62)
-    display_formatted_row(["Destination", "Tour"], green(format_str))
+    display_formatted_row(["Destination", "Tour"], format_str_header)
     print('-'*62)
 
     for destination, tour_list in destintions:
         first_line_mark = True
         for tour in tour_list:
             if first_line_mark:
-                display_formatted_row([destination, tour], '| {: <20} | {: <35} |')
+                display_formatted_row([destination, tour], format_str)
                 first_line_mark = False
             else:
-                display_formatted_row(['', tour], '| {: <20} | {: <35} |')
+                display_formatted_row(['', tour], format_str)
         print('-'*62)
 
 
