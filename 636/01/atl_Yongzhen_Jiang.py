@@ -13,13 +13,13 @@ from collections import namedtuple
 from atl_data import customers, tours, unique_id, display_formatted_row   
 
 
-# red = '\033[91m'
-# green = '\033[92m'
-# blue = '\033[94m'
-# yellow = '\033[93m'
-# magenta = '\033[95m'
-# cyan = '\033[96m'
-# reset = '\033[0m'
+# red = "\033[91m"
+# green = "\033[92m"
+# blue = "\033[94m"
+# yellow = "\033[93m"
+# magenta = "\033[95m"
+# cyan = "\033[96m"
+# reset = "\033[0m"
 
 def red(format_str):
     return format_str.replace("{", "\033[91m{").replace("}", "}\033[0m")
@@ -44,13 +44,13 @@ def display_customer_list(customers):
     """
     Display all customer"""
 
-    print('-'*106)
+    print("-"*106)
     format_str = "| {: <5} | {: <15} | {: <15} | {: <15} | {: <40} |"            # Use the same format_str for column headers and rows to ensure consistent spacing. 
     display_formatted_row(["ID","First Name","Family Name","Birth Date","E-Mail"], green(format_str))     # Use the display_formatted_row() function to display the column headers with consistent spacing
-    print('-'*106)
+    print("-"*106)
 
     if len(customers) == 0:
-        display_formatted_row(['No Customer'], "| {: <102} |")
+        display_formatted_row(["No Customer"], "| {: <102} |")
 
     else:
         # sort customers by family name and first name
@@ -66,7 +66,7 @@ def display_customer_list(customers):
 
             display_formatted_row([id,first_name,family_name,birthdate,email],format_str)     # Use the display_formatted_row() function to display each row with consistent spacing
 
-    print('-'*106)
+    print("-"*106)
 
 
 def display_tour_groups(tour_group_list):
@@ -76,7 +76,7 @@ def display_tour_groups(tour_group_list):
     print()
     print("-"*96)
     format_str = "| {: <5} | {: <33} | {: <48} |"
-    display_formatted_row(['No', 'Tour Group', 'Tour Date'], green(format_str))
+    display_formatted_row(["No", "Tour Group", "Tour Date"], green(format_str))
     print("-"*96)
 
     for index, tg in enumerate(tour_group_list):
@@ -89,7 +89,7 @@ def is_email(email):
     """
     Check email address format using regex"""
 
-    email_patter = r'^\S+@\S+\.\S+$'
+    email_patter = r"^\S+@\S+\.\S+$"
     return re.match(email_patter, email)
 
 
@@ -98,16 +98,16 @@ def is_valid_date(birth_date):
     Check whether the birth date is a valid date"""
 
     try:
-        birth_date = datetime.strptime(birth_date, '%d/%m/%Y')
+        birth_date = datetime.strptime(birth_date, "%d/%m/%Y")
 
         if birth_date.date() > date.today():
-            return 'Later than today'
+            return "Later than today"
         elif birth_date.date() < yearsago(110, date.today()):
-            return 'Earlier than 110 years ago'
+            return "Earlier than 110 years ago"
         else:
             return birth_date.date()
     except ValueError:
-        return 'Incorrect date format'
+        return "Incorrect date format"
 
 
 def yearsago(years, current_date=None):
@@ -194,11 +194,11 @@ def get_tour_groups(name_descending=False, date_descending=False):
 
 
     # Transform tours data into a list of namedtuple ("title age_restriction memeber_list"), where title is another namedtuple ("name date")
-    # Finally: ("("name date") age_restriction member_list") -> (('WestEurope', date(2023,8,15)), 0, [810,801])
+    # Finally: ("("name date") age_restriction member_list") -> (("WestEurope", date(2023,8,15)), 0, [810,801])
     for tour in tours.items():
-        for group in tour[1]['groups'].items():
+        for group in tour[1]["groups"].items():
             title = tour_group_title(tour[0], group[0])
-            tour_group_list.append(tour_group(title, tour[1]['age_restriction'], group[1]))
+            tour_group_list.append(tour_group(title, tour[1]["age_restriction"], group[1]))
     
     # sort by group date ascending (use reverse=True for descending)
     tour_group_list = sorted(tour_group_list, key=lambda x: x.title.date, reverse=date_descending)
@@ -218,8 +218,8 @@ def display_customer_by_tour_group(tour_group_list):
     for tg in tour_group_list:
         print()
 
-        print('-'*106)
-        print('| Tour  |', end="")
+        print("-"*106)
+        print("| Tour  |", end="")
         display_tour_group_header(tg.title.name, tg.title.date)
 
         if len(tg.member_list) == 0:
@@ -236,7 +236,7 @@ def display_tour_group_header(tour_name, tour_date):
     Display tour group header"""
 
     format_str = "{: <34} | {: <15} | {: <40} |"
-    display_formatted_row([tour_name, tour_date.strftime('%b %Y'), tour_date.strftime('%d %b %Y')], cyan(format_str))
+    display_formatted_row([tour_name, tour_date.strftime("%b %Y"), tour_date.strftime("%d %b %Y")], cyan(format_str))
 
 
 def display_tour_details(tours):
@@ -246,18 +246,18 @@ def display_tour_details(tours):
     for tour in tours:
         # print(tour[0])
         print()
-        print('-'*52)
-        print('| Tour         |', end='')
+        print("-"*52)
+        print("| Tour         |", end="")
         display_formatted_row([tour[0]], cyan(" {: <33} |"))
-        print('-'*52)
-        print('| Destinations |', end='')
+        print("-"*52)
+        print("| Destinations |", end="")
         first_line_mark = True
-        for itinerary in sorted(tour[1]['itinerary']):
+        for itinerary in sorted(tour[1]["itinerary"]):
             if not first_line_mark:
-                print('|              |', end='')
+                print("|              |", end="")
             display_formatted_row([itinerary], green(" {: <33} |"))
             first_line_mark = False
-        print('-'*52)
+        print("-"*52)
 
 
 def get_all_destinations_with_tour():
@@ -267,9 +267,9 @@ def get_all_destinations_with_tour():
 
     destinations = set()
 
-    # Add all destinations into a set (so there's no duplicate destination)
+    # Add all destinations into a set (so there"s no duplicate destination)
     for tour in tours.items():
-        destinations |= set(tour[1]['itinerary'])
+        destinations |= set(tour[1]["itinerary"])
 
     # Sort destinations by name ascending
     destinations = sorted(destinations)
@@ -279,7 +279,7 @@ def get_all_destinations_with_tour():
     for d in destinations:
         tour_list = []
         for tour in tours.items():
-            if d in tour[1]['itinerary']:
+            if d in tour[1]["itinerary"]:
                 tour_list.append(tour[0])
         tour_list = sorted(tour_list)
         destinations_tour.append((d, tour_list))
@@ -293,12 +293,12 @@ def display_destinations_with_tour(destintions):
 
     print()
 
-    format_str_header = '| {: <20} | {: <35} |'
+    format_str_header = "| {: <20} | {: <35} |"
     format_str = "| \033[96m{: <20}\033[0m | \033[92m{: <35}\033[0m |"
 
-    print('-'*62)
+    print("-"*62)
     display_formatted_row(["Destination", "Tour"], format_str_header)
-    print('-'*62)
+    print("-"*62)
 
     for destination, tour_list in destintions:
         first_line_mark = True
@@ -307,8 +307,8 @@ def display_destinations_with_tour(destintions):
                 display_formatted_row([destination, tour], format_str)
                 first_line_mark = False
             else:
-                display_formatted_row(['', tour], format_str)
-        print('-'*62)
+                display_formatted_row(["", tour], format_str)
+        print("-"*62)
 
 
 def get_customers_dict(customers):
@@ -320,27 +320,27 @@ def get_customers_dict(customers):
 
 
 def print_red(s):
-    print('\033[91m{}\033[0m'.format(s))
+    print("\033[91m{}\033[0m".format(s))
 
 
 def print_green(s):
-    print('\033[92m{}\033[0m'.format(s))
+    print("\033[92m{}\033[0m".format(s))
 
 
 def print_blue(s):
-    print('\033[94m{}\033[0m'.format(s))
+    print("\033[94m{}\033[0m".format(s))
 
 
 def print_yellow(s):
-    print('\033[93m{}\033[0m'.format(s))
+    print("\033[93m{}\033[0m".format(s))
 
 
 def print_magenta(s):
-    print('\033[95m{}\033[0m'.format(s))
+    print("\033[95m{}\033[0m".format(s))
 
 
 def print_cyan(s):
-    print('\033[96m{}\033[0m'.format(s))
+    print("\033[96m{}\033[0m".format(s))
 
 
 
@@ -398,18 +398,18 @@ def add_customer_to_tourgroup():
     while True:
         customer_id = input("Please input a customer id (input c to cancel): ")
 
-        if customer_id.lower() == 'c':
+        if customer_id.lower() == "c":
             input("\nPress Enter to continue.")
             return
         
         try:
             customer_id = int(customer_id)
             if not is_customer_id_existed(customer_id):
-                print("Customer ID not existing, please try again (input c to quit).\n")
+                print_red("Customer ID not existing, please try again (input c to quit).\n")
             else:
                 break
         except ValueError:
-            print("Please input an integer.\n")
+            print_red("Please input an integer.\n")
     
     # Get tour groups
     tour_group_list = get_tour_groups()
@@ -428,24 +428,24 @@ def add_customer_to_tourgroup():
         try:
             index = int(index) - 1
             if not is_tour_group_existed(index, tour_group_list):
-                print("Tour group number is not correct. Please try again (input c to cancel).\n")
+                print_red("Tour group number is not correct. Please try again (input c to cancel).\n")
 
             elif is_customer_already_in_tour_group(customer_id, index, tour_group_list):
-                print("Customer already in this tour group. Please try again (input c to cancel).\n")
+                print_red("Customer already in this tour group. Please try again (input c to cancel).\n")
 
             elif not is_customer_age_valid(customer_id, index, tour_group_list):
-                print("Customer is younger than the age restricted. Please try again (input c to cancel).\n")
+                print_red("Customer is younger than the age restricted. Please try again (input c to cancel).\n")
 
             else:
                 break
 
         except ValueError:
-            print("Please input an integer.\n")
+            print_red("Please input an integer.\n")
 
     # Internal function to add cutomer into tour group
     _add_customer_to_tourgroup(customer_id, index, tour_group_list)
 
-    print('The customer has been added to the tour group successfully.\n')
+    print_green("The customer has been added to the tour group successfully.\n")
 
     input("\nPress Enter to continue.")
 
@@ -464,17 +464,17 @@ def add_new_customer():
         if last_name == ":q":
             return
 
-        birth_date = get_input("Please input birth date with format 'dd/MM/YYYY' (input :q to quit):\n", validation='date')
+        birth_date = get_input("Please input birth date with format 'dd/MM/YYYY' (input :q to quit):\n", validation="date")
         if birth_date == ":q":
             return
 
-        email = get_input("Please input email address (input :q to quit):\n", validation='email')
+        email = get_input("Please input email address (input :q to quit):\n", validation="email")
         if email == ":q":
             return
 
         _add_new_customer([first_name, last_name, birth_date, email])
 
-        print("Cutomer has successfully added. Continue to add another customer.\n")
+        print_green("Cutomer has successfully added. Continue to add another customer.\n")
 
 
 def get_input(prompt, validation=None):
@@ -489,20 +489,20 @@ def get_input(prompt, validation=None):
             return ":q"
 
         if input_string == "":
-            print("Can not be empty.")
+            print_red("Can not be empty.")
             continue
 
-        elif validation == 'date':
+        elif validation == "date":
             validation_result = is_valid_date(input_string)
             if type(validation_result) != date:
-                print(validation_result)
+                print_red(validation_result)
                 continue
 
             input_string = validation_result
 
-        elif validation == 'email':
+        elif validation == "email":
             if not is_email(input_string):
-                print("Incorrect email format")
+                print_red("Incorrect email format")
                 continue
         break
     return input_string
