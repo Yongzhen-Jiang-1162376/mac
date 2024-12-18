@@ -1,46 +1,54 @@
 # ============== AOTEAROA TOUR MANAGEMENT SYSTEM ==============
-# Student Name: Yongzhen Jiang
-# Student ID : 1162376
+# Student Name: 
+# Student ID : 
 # =============================================================
-
-
-# * * * * * * * * * ======= WARNING ======= * * * * * * * * * * * 
-# * * * Do not add any functions or variables to this file. * * *  
-# * * *    It will be deleted and replaced for marking.     * * *
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
 from datetime import date,datetime,timedelta
 
 
+# ==================  ALTERNATIVE DATA SET  ===================
+# When we mark your assessment, we will use a dataset with the same structure, but with
+# different data (e.g., different tour names and dates, and different customers).
+# 
+# Try renaming this file to 'atl_data.py' and check that your code still works  --
+
 
 tours = {
     # itinerary is the list of destinations visited on the tour
-    "UK": {"itinerary":["London","Stoke-On-Trent","Cotswolds","Ambleside","Glasgow","Edinburgh","Inverness","Loch Ness"],
+    "Aotearoa Southern Splendour": {"itinerary":["Christchurch","Queenstown","Milford Sound","Dunedin"],
            # age restriction is the integer age limit for taking the tour, tour participants must be at least this old
-           "age_restriction":0,
+           "age_restriction":15,
            # tour groups - the tour date is the key, a list of tour participants (customers) is the value
-           "groups":{date(2023,7,10):[816,923,343]}},
-    "WestEurope": {"itinerary":["London","Paris","Madrid","Berlin"],
+           "groups":{date(2025,1,2):[2316,2023,764,765]}},
+    "Aussie Adventure": {"itinerary":["Sydney","Alice Springs","Uluru","Darwin","Sydney"],
            "age_restriction":0,
-           "groups":{date(2023,8,15):[810,801]}},
-    "EastEurope": {"itinerary":["Berlin","Bucharest","Budapest","Minsk"],
+           "groups":{date(2024,10,5):[1863,1186,1801,2023]}},
+    "Aotearoa New Year": {"itinerary":["Auckland","Rotorua","Milford Sound", "Queenstown"],
+           # age restriction is the integer age limit for taking the tour, tour participants must be at least this old
            "age_restriction":18,
-           "groups":{date(2025,6,24):[786],date(2025,2,21):[121],date(2024,2,20):[]}},
+           # tour groups - the tour date is the key, a list of tour participants (customers) is the value
+           "groups":{date(2024,12,30):[1291,1186,2316],date(2025,12,30):[1186]}},
+    "Island Hop": {"itinerary":["Fiji","Rarotonga"],
+           "age_restriction":0,
+           "groups":{date(2025,1,2):[2343]}},
 }
 
 
 # [id, first_name, family_name, birthdate ,email address]
 customers = [ 
-	[816, 'Simon', 'Charles', date(1952,7,15), 'simon@charles.nz'],
-	[923, 'Simone', 'Charles', date(1987,9,1), 'simone.charles@kiwi.nz'],
-	[343, 'Charlie', 'Charles', date(1954,1,25), 'charlie@charles.nz'],
-	[810, 'Kate', 'McArthur', date(1972,9,30), 'K_McArthur94@gmail.com'],
-	[786, 'Jack', 'Hopere', date(1980,2,10), 'Jack643@gmail.com'],
-	[801, 'Chloe', 'Mathewson', date(1980,3,15), 'Chloe572@gmail.com'],
-	[121, 'Kate', 'McLeod', date(1952,7,15), 'KMcLeod112@gmail.com'],
-    [924, 'Samantha', 'Charles', date(2013,7,24), 'simone.charles@kiwi.nz']
+	[2316, 'Kate', 'McArthur', date(1956,7,15), 'K_McArthur94@gmail.com'],
+	[2023, 'Jack', 'Hopere', date(1966,9,1), 'jack.hopere@kiwi.nz'],
+	[2343, 'Chloe', 'Charles', date(1994,1,25), 'chloe@charles.nz'],
+	[1863, 'Xue', 'Liu', date(1992,9,30), 'xuelulu18@gmail.com'],
+	[1186, 'Sam', 'Liu', date(1989,2,10), 'sammiebro@xmail.com'],
+	[1801, 'Xuhong', 'Liu', date(2010,3,15), 'redfishy99@xao123.com'],
+	[1291, 'Satish', 'Patel', date(1984,7,15), 'financialsolutions2016@gmail.com'],
+    [1924, 'Parveen', 'Patel', date(1988,9,24), 'p.patel.1438@gtel.com'],
+    [1925, 'Rashid', 'Patel', date(2006,12,24), 'skaterpro993@gtel.com'],
+    [2222, 'Rishi', 'Patel', date(2021,1,3), 'p.patel.1438@gtel.com'],
+    [764, 'Cyril', 'Wright', date(1939,9,19), 'cmwright@xtra.co.nz'],
+    [765, 'Mabel', 'Wright', date(1941,9,20), 'cmwright@xtra.co.nz']
 ]
-
 
 def unique_id():
     """

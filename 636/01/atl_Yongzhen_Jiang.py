@@ -44,25 +44,29 @@ def display_customer_list(customers):
     """
     Display all customer"""
 
-    print('-'*96)
-    format_str = "| {: <5} | {: <15} | {: <15} | {: <15} | {: <30} |"            # Use the same format_str for column headers and rows to ensure consistent spacing. 
+    print('-'*106)
+    format_str = "| {: <5} | {: <15} | {: <15} | {: <15} | {: <40} |"            # Use the same format_str for column headers and rows to ensure consistent spacing. 
     display_formatted_row(["ID","First Name","Family Name","Birth Date","E-Mail"], green(format_str))     # Use the display_formatted_row() function to display the column headers with consistent spacing
-    print('-'*96)
+    print('-'*106)
 
     if len(customers) == 0:
-        display_formatted_row(['No Customer'], "| {: <92} |")
+        display_formatted_row(['No Customer'], "| {: <102} |")
 
     else:
+        # sort customers by family name and first name
+        customers = sorted(customers, key=lambda c: c[2])
+        customers = sorted(customers, key=lambda c: c[1])
+        
         for customer in customers:
             id = customer[0]
-            fname = customer[1]
-            famname = customer[2]
+            first_name = customer[1]
+            family_name = customer[2]
             birthdate = customer[3].strftime("%d %b %Y")
             email = customer[4]
 
-            display_formatted_row([id,fname,famname,birthdate,email],format_str)     # Use the display_formatted_row() function to display each row with consistent spacing
+            display_formatted_row([id,first_name,family_name,birthdate,email],format_str)     # Use the display_formatted_row() function to display each row with consistent spacing
 
-    print('-'*96)
+    print('-'*106)
 
 
 def display_tour_groups(tour_group_list):
@@ -76,7 +80,7 @@ def display_tour_groups(tour_group_list):
     print("-"*96)
 
     for index, tg in enumerate(tour_group_list):
-        display_formatted_row([index + 1, tg.title.name, get_datetime(tg.title.date).strftime("%d %b %Y")], format_str)
+        display_formatted_row([index + 1, tg.title.name, tg.title.date.strftime("%d %b %Y")], format_str)
     
     print("-"*96)
 
@@ -197,7 +201,7 @@ def get_tour_groups(name_descending=False, date_descending=False):
             tour_group_list.append(tour_group(title, tour[1]['age_restriction'], group[1]))
     
     # sort by group date ascending (use reverse=True for descending)
-    tour_group_list = sorted(tour_group_list, key=lambda x: get_datetime(x.title.date), reverse=date_descending)
+    tour_group_list = sorted(tour_group_list, key=lambda x: x.title.date, reverse=date_descending)
 
     # sort by group name ascending (use reversed=True for descending)
     tour_group_list = sorted(tour_group_list, key=lambda x: x.title.name, reverse=name_descending)
@@ -214,7 +218,7 @@ def display_customer_by_tour_group(tour_group_list):
     for tg in tour_group_list:
         print()
 
-        print('-'*96)
+        print('-'*106)
         print('| Tour  |', end="")
         display_tour_group_header(tg.title.name, tg.title.date)
 
@@ -231,7 +235,7 @@ def display_tour_group_header(tour_name, tour_date):
     """
     Display tour group header"""
 
-    format_str = "{: <34} | {: <15} | {: <30} |"
+    format_str = "{: <34} | {: <15} | {: <40} |"
     display_formatted_row([tour_name, tour_date.strftime('%b %Y'), tour_date.strftime('%d %b %Y')], cyan(format_str))
 
 
@@ -242,14 +246,18 @@ def display_tour_details(tours):
     for tour in tours:
         # print(tour[0])
         print()
-        print('-'*109)
+        print('-'*52)
         print('| Tour         |', end='')
-        display_formatted_row([tour[0]], cyan(" {: <90} |"))
-        print('-'*109)
+        display_formatted_row([tour[0]], cyan(" {: <33} |"))
+        print('-'*52)
         print('| Destinations |', end='')
-        display_formatted_row([', '.join(tour[1]['itinerary'])], green(" {: <90} |"))
-        print('-'*109)
-        # print(', '.join(tour[1]['itinerary']))
+        first_line_mark = True
+        for itinerary in sorted(tour[1]['itinerary']):
+            if not first_line_mark:
+                print('|              |', end='')
+            display_formatted_row([itinerary], green(" {: <33} |"))
+            first_line_mark = False
+        print('-'*52)
 
 
 def get_all_destinations_with_tour():
@@ -285,26 +293,21 @@ def display_destinations_with_tour(destintions):
 
     print()
 
-    format_str = "| {: <23} | {: <66} |"
+    format_str = "| {: <20} | {: <35} |"
 
-    print('-'*96)
+    print('-'*62)
     display_formatted_row(["Destination", "Tour"], green(format_str))
-    print('-'*96)
+    print('-'*62)
 
-    for d, t in destintions:
-        display_formatted_row((d, ",".join(t)), format_str)
-    print('-'*96)
-
-
-def get_datetime(dt):
-    """
-    Convert date to datetime since tour date in the source data might be date or datetime
-    Use datetime to compare tour date"""
-
-    if type(dt) == date:
-        return datetime(dt.year, dt.month, dt.day)
-    else:
-        return dt
+    for destination, tour_list in destintions:
+        first_line_mark = True
+        for tour in tour_list:
+            if first_line_mark:
+                display_formatted_row([destination, tour], '| {: <20} | {: <35} |')
+                first_line_mark = False
+            else:
+                display_formatted_row(['', tour], '| {: <20} | {: <35} |')
+        print('-'*62)
 
 
 def get_customers_dict(customers):
@@ -362,7 +365,7 @@ def list_customers_by_tourgroup():
     # Get tour groups
     tour_group_list = get_tour_groups()
     
-    # print(tour_groups)
+    print(tour_group_list)
     
     # Display tour groups
     display_customer_by_tour_group(tour_group_list)
