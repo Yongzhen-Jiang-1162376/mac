@@ -7,6 +7,7 @@ from datetime import datetime, date, timedelta     # datetime module is required
 import re                                          # used to check against email format
 
 # use namedtuple to receive data which is easy to access value with field name, rather than with integer index.
+# but we could also use normal tuples here
 from collections import namedtuple
 
 # Make the variables and function in atl_data.py available in this code (without needing 'atl_data.' prefix)
@@ -21,6 +22,7 @@ from atl_data import customers, tours, unique_id, display_formatted_row
 # cyan = "\033[96m"
 # reset = "\033[0m"
 
+# some helper functions for printing with color
 def red(format_str):
     return format_str.replace("{", "\033[91m{").replace("}", "}\033[0m")
 
@@ -330,11 +332,48 @@ def get_customers_dict(customers):
     return {c[0]: [c[0], c[1], c[2], c[3], c[4]] for c in customers}
 
 
+def get_input(prompt, validation=None):
+    """
+    Receive user input and validate date or email.
+    This function is used for add new customer (First Name, Last Name, Birth Date, Email)."""
+
+    while True:
+        input_string = input(prompt).strip()
+
+        if input_string.lower() == ":q":
+            return ":q"
+
+        if input_string == "":
+            print_warning("Input can not be empty.")
+            continue
+
+        elif validation == "date":
+            validation_result = is_valid_date(input_string)
+            if type(validation_result) != date:
+                print_warning(validation_result)
+                continue
+
+            input_string = validation_result
+
+        elif validation == "email":
+            if not is_email(input_string):
+                print_warning("Incorrect email format")
+                continue
+        break
+    return input_string
 
 
+def _add_new_customer(new_customer):
+    """
+    Add new customer into customers"""
+
+    customers.append([unique_id(), *new_customer])
 
 
 # ----------------------- End of Internal functions -----------------------
+
+
+
 
 
 def list_all_customers():
@@ -465,44 +504,6 @@ def add_new_customer():
         _add_new_customer([first_name, last_name, birth_date, email])
 
         print_success("Cutomer has successfully added. Continue to add another customer.\n")
-
-
-def get_input(prompt, validation=None):
-    """
-    Receive user input and validate date or email.
-    This function is used for add new customer (First Name, Last Name, Birth Date, Email)."""
-
-    while True:
-        input_string = input(prompt).strip()
-
-        if input_string.lower() == ":q":
-            return ":q"
-
-        if input_string == "":
-            print_warning("Input can not be empty.")
-            continue
-
-        elif validation == "date":
-            validation_result = is_valid_date(input_string)
-            if type(validation_result) != date:
-                print_warning(validation_result)
-                continue
-
-            input_string = validation_result
-
-        elif validation == "email":
-            if not is_email(input_string):
-                print_warning("Incorrect email format")
-                continue
-        break
-    return input_string
-
-
-def _add_new_customer(new_customer):
-    """
-    Add new customer into customers"""
-
-    customers.append([unique_id(), *new_customer])
 
 
 def list_all_destinations():
