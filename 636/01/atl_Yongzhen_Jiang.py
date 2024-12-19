@@ -332,7 +332,7 @@ def get_customers_dict(customers):
     return {c[0]: [c[0], c[1], c[2], c[3], c[4]] for c in customers}
 
 
-def get_input(prompt, validation=None):
+def get_user_input(prompt, validation=None):
     """
     Receive user input and validate date or email.
     This function is used for add new customer (First Name, Last Name, Birth Date, Email)."""
@@ -485,19 +485,19 @@ def add_new_customer():
 
     # User can add new customer repeatedly
     while True:
-        first_name = get_input("Please input first name (input :q to quit):\n")
+        first_name = get_user_input("Please input first name (input :q to quit):\n")
         if first_name == ":q":
             return
         
-        last_name = get_input("Please input last name (input :q to quit):\n")
+        last_name = get_user_input("Please input last name (input :q to quit):\n")
         if last_name == ":q":
             return
 
-        birth_date = get_input("Please input birth date with format 'dd/MM/YYYY' (input :q to quit):\n", validation="date")
+        birth_date = get_user_input("Please input birth date with format 'dd/MM/YYYY' (input :q to quit):\n", validation="date")
         if birth_date == ":q":
             return
 
-        email = get_input("Please input email address (input :q to quit):\n", validation="email")
+        email = get_user_input("Please input email address (input :q to quit):\n", validation="email")
         if email == ":q":
             return
 
