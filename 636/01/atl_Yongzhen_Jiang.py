@@ -108,9 +108,9 @@ def is_valid_date(birth_date):
         birth_date = datetime.strptime(birth_date, "%d/%m/%Y")
 
         if birth_date.date() > date.today():
-            return "Later than today"
+            return "The date input is later than today"
         elif birth_date.date() < yearsago(110, date.today()):
-            return "Earlier than 110 years ago"
+            return "The date input is earlier than 110 years ago"
         else:
             return birth_date.date()
     except ValueError:
@@ -386,16 +386,16 @@ def add_customer_to_tourgroup():
     
     # Input and validate customer id
     while True:
-        customer_id = input("Please input a customer id (input c to cancel): ")
+        customer_id = input("Please input a customer id (input :q to quit): ")
 
-        if customer_id.lower() == "c":
+        if customer_id.lower() == ":q":
             input("\nPress Enter to continue.")
             return
         
         try:
             customer_id = int(customer_id)
             if not is_customer_id_existed(customer_id):
-                print_warning("Customer ID not existing, please try again (input c to quit).\n")
+                print_warning("Customer ID not existing, please try again (input :q to quit).\n")
             else:
                 break
         except ValueError:
@@ -409,22 +409,22 @@ def add_customer_to_tourgroup():
 
     # Input and validate tour group
     while True:
-        index = input("Plese input the tour group number (input c to cancel): ")
+        index = input("Plese input the tour group number (input :q to quit): ")
 
-        if index.lower() == "c":
+        if index.lower() == ":q":
             input("\nPress Enter to continue.")
             return
 
         try:
             index = int(index) - 1
             if not is_tour_group_existed(index, tour_group_list):
-                print_warning("Tour group number is not correct. Please try again (input c to cancel).\n")
+                print_warning("Tour group number is not correct. Please try again (input :q to quit).\n")
 
             elif is_customer_already_in_tour_group(customer_id, index, tour_group_list):
-                print_warning("Customer already in this tour group. Please try again (input c to cancel).\n")
+                print_warning("Customer already in this tour group. Please try again (input :q to quit).\n")
 
             elif not is_customer_age_valid(customer_id, index, tour_group_list):
-                print_warning("Customer is younger than the age restricted. Please try again (input c to cancel).\n")
+                print_warning("Customer is younger than the age restricted. Please try again (input :q to quit).\n")
 
             else:
                 break
@@ -434,7 +434,7 @@ def add_customer_to_tourgroup():
 
     # Internal function to add cutomer into tour group
     _add_customer_to_tourgroup(customer_id, index, tour_group_list)
-
+    
     print_success("The customer has been added to the tour group successfully.\n")
 
     input("\nPress Enter to continue.")
@@ -469,7 +469,7 @@ def add_new_customer():
 
 def get_input(prompt, validation=None):
     """
-    Receiver user input and validate date or email.
+    Receive user input and validate date or email.
     This function is used for add new customer (First Name, Last Name, Birth Date, Email)."""
 
     while True:
