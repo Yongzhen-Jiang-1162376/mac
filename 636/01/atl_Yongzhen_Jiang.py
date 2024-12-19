@@ -39,23 +39,12 @@ def magenta(format_str):
 def cyan(format_str):
     return format_str.replace("{", "\033[96m{").replace("}", "}\033[0m")
 
-def print_red(s):
+def print_warning(s):
     print("\033[91m{}\033[0m".format(s))
 
-def print_green(s):
+def print_success(s):
     print("\033[92m{}\033[0m".format(s))
 
-def print_blue(s):
-    print("\033[94m{}\033[0m".format(s))
-
-def print_yellow(s):
-    print("\033[93m{}\033[0m".format(s))
-
-def print_magenta(s):
-    print("\033[95m{}\033[0m".format(s))
-
-def print_cyan(s):
-    print("\033[96m{}\033[0m".format(s))
 
 # ----------------------- Start of Internal functions -----------------------
 def display_customer_list(customers):
@@ -72,8 +61,8 @@ def display_customer_list(customers):
 
     else:
         # sort customers by family name and first name
-        customers = sorted(customers, key=lambda c: c[2])
         customers = sorted(customers, key=lambda c: c[1])
+        customers = sorted(customers, key=lambda c: c[2])
         
         for customer in customers:
             id = customer[0]
@@ -406,11 +395,11 @@ def add_customer_to_tourgroup():
         try:
             customer_id = int(customer_id)
             if not is_customer_id_existed(customer_id):
-                print_red("Customer ID not existing, please try again (input c to quit).\n")
+                print_warning("Customer ID not existing, please try again (input c to quit).\n")
             else:
                 break
         except ValueError:
-            print_red("Please input an integer.\n")
+            print_warning("Please input an integer.\n")
     
     # Get tour groups
     tour_group_list = get_tour_groups()
@@ -429,24 +418,24 @@ def add_customer_to_tourgroup():
         try:
             index = int(index) - 1
             if not is_tour_group_existed(index, tour_group_list):
-                print_red("Tour group number is not correct. Please try again (input c to cancel).\n")
+                print_warning("Tour group number is not correct. Please try again (input c to cancel).\n")
 
             elif is_customer_already_in_tour_group(customer_id, index, tour_group_list):
-                print_red("Customer already in this tour group. Please try again (input c to cancel).\n")
+                print_warning("Customer already in this tour group. Please try again (input c to cancel).\n")
 
             elif not is_customer_age_valid(customer_id, index, tour_group_list):
-                print_red("Customer is younger than the age restricted. Please try again (input c to cancel).\n")
+                print_warning("Customer is younger than the age restricted. Please try again (input c to cancel).\n")
 
             else:
                 break
 
         except ValueError:
-            print_red("Please input an integer.\n")
+            print_warning("Please input an integer.\n")
 
     # Internal function to add cutomer into tour group
     _add_customer_to_tourgroup(customer_id, index, tour_group_list)
 
-    print_green("The customer has been added to the tour group successfully.\n")
+    print_success("The customer has been added to the tour group successfully.\n")
 
     input("\nPress Enter to continue.")
 
@@ -475,7 +464,7 @@ def add_new_customer():
 
         _add_new_customer([first_name, last_name, birth_date, email])
 
-        print_green("Cutomer has successfully added. Continue to add another customer.\n")
+        print_success("Cutomer has successfully added. Continue to add another customer.\n")
 
 
 def get_input(prompt, validation=None):
@@ -490,20 +479,20 @@ def get_input(prompt, validation=None):
             return ":q"
 
         if input_string == "":
-            print_red("Can not be empty.")
+            print_warning("Input can not be empty.")
             continue
 
         elif validation == "date":
             validation_result = is_valid_date(input_string)
             if type(validation_result) != date:
-                print_red(validation_result)
+                print_warning(validation_result)
                 continue
 
             input_string = validation_result
 
         elif validation == "email":
             if not is_email(input_string):
-                print_red("Incorrect email format")
+                print_warning("Incorrect email format")
                 continue
         break
     return input_string
