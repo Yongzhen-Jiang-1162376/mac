@@ -12,7 +12,7 @@ from collections import namedtuple
 # Make the variables and function in atl_data.py available in this code (without needing 'atl_data.' prefix)
 from atl_data import customers, tours, unique_id, display_formatted_row   
 
-
+# color code for in command line
 # red = "\033[91m"
 # green = "\033[92m"
 # blue = "\033[94m"
@@ -38,6 +38,24 @@ def magenta(format_str):
 
 def cyan(format_str):
     return format_str.replace("{", "\033[96m{").replace("}", "}\033[0m")
+
+def print_red(s):
+    print("\033[91m{}\033[0m".format(s))
+
+def print_green(s):
+    print("\033[92m{}\033[0m".format(s))
+
+def print_blue(s):
+    print("\033[94m{}\033[0m".format(s))
+
+def print_yellow(s):
+    print("\033[93m{}\033[0m".format(s))
+
+def print_magenta(s):
+    print("\033[95m{}\033[0m".format(s))
+
+def print_cyan(s):
+    print("\033[96m{}\033[0m".format(s))
 
 # ----------------------- Start of Internal functions -----------------------
 def display_customer_list(customers):
@@ -215,12 +233,15 @@ def display_customer_by_tour_group(tour_group_list):
 
     customers_dict = get_customers_dict(customers)
 
+    # Calculate max length of tour name
+    max_length = max([len(tour_group.title.name) for tour_group in tour_group_list])
+
     for tg in tour_group_list:
         print()
 
-        print("-"*106)
-        print("| Tour  |", end="")
-        display_tour_group_header(tg.title.name, tg.title.date)
+        # print("-"*106)
+        print(" Tour  ", end="")
+        display_tour_group_header(tg.title.name, tg.title.date, max_length)
 
         if len(tg.member_list) == 0:
             display_customer_list([])
@@ -231,12 +252,12 @@ def display_customer_by_tour_group(tour_group_list):
             display_customer_list(customer_list)
 
 
-def display_tour_group_header(tour_name, tour_date):
+def display_tour_group_header(tour_name, tour_date, max_length):
     """
     Display tour group header"""
 
-    format_str = "{: <34} | {: <15} | {: <40} |"
-    display_formatted_row([tour_name, tour_date.strftime("%b %Y"), tour_date.strftime("%d %b %Y")], cyan(format_str))
+    format_str = "\033[94m{: <" + str(max_length) + "}\033[0m        Date  \033[96m{: <15}\033[0m  Month  \033[95m{: <40}\033[0m "
+    display_formatted_row([tour_name, tour_date.strftime("%d %b %Y"), tour_date.strftime("%b %Y"), ], format_str)
 
 
 def display_tour_details(tours):
@@ -308,7 +329,8 @@ def display_destinations_with_tour(destintions):
                 first_line_mark = False
             else:
                 display_formatted_row(["", tour], format_str)
-        print("-"*62)
+    
+    print("-"*62)
 
 
 def get_customers_dict(customers):
@@ -319,28 +341,7 @@ def get_customers_dict(customers):
     return {c[0]: [c[0], c[1], c[2], c[3], c[4]] for c in customers}
 
 
-def print_red(s):
-    print("\033[91m{}\033[0m".format(s))
 
-
-def print_green(s):
-    print("\033[92m{}\033[0m".format(s))
-
-
-def print_blue(s):
-    print("\033[94m{}\033[0m".format(s))
-
-
-def print_yellow(s):
-    print("\033[93m{}\033[0m".format(s))
-
-
-def print_magenta(s):
-    print("\033[95m{}\033[0m".format(s))
-
-
-def print_cyan(s):
-    print("\033[96m{}\033[0m".format(s))
 
 
 
@@ -366,7 +367,7 @@ def list_customers_by_tourgroup():
     # Get tour groups
     tour_group_list = get_tour_groups()
     
-    print(tour_group_list)
+    # print(tour_group_list)
     
     # Display tour groups
     display_customer_by_tour_group(tour_group_list)
