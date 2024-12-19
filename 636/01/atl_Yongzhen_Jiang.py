@@ -82,14 +82,16 @@ def display_customer_list(customers):
 
 def display_tour_groups(tour_group_list):
     """
-    Display tour groups"""
+    Display tour groups, the left column No is the index sequence for tour groups. User selects this number to choose a tour group."""
 
     print()
     print("-"*96)
     format_str = "| {: <5} | {: <33} | {: <48} |"
+    # display header
     display_formatted_row(["No", "Tour Group", "Tour Date"], green(format_str))
     print("-"*96)
 
+    # display tour groups as table of: (Sequence No, tour name, tour date)
     for index, tg in enumerate(tour_group_list):
         display_formatted_row([index + 1, tg.header.name, tg.header.date.strftime("%d %b %Y")], format_str)
     
@@ -111,27 +113,30 @@ def is_valid_date(birth_date):
     try:
         birth_date = datetime.strptime(birth_date, "%d/%m/%Y")
 
+        # check whether the date is later than today
         if birth_date.date() > date.today():
             return "The date input is later than today"
+        # check whether the date is earlier than 110 years ago
         elif birth_date.date() < yearsago(110, date.today()):
             return "The date input is earlier than 110 years ago"
         else:
             return birth_date.date()
-    except ValueError:
+    except ValueError:      # Incorrect date format which should be 'dd/mm/yyyy'
         return "Incorrect date format"
 
 
 def yearsago(years, current_date=None):
     """
-    Calcuate the date which is N years ago"""
+    Calcuate the date which is a number of years ago. Need to check whether that year was a leap year and the current date is 29 Feb."""
 
     if current_date is None:
         current_date = datetime.today().date()
 
     try:
+        # It was not a leap year
         return current_date.replace(year=current_date.year - years)
     except ValueError:
-        # Leap year and is 29 Feb
+        # Leap year and is 29 Feb, then replace the date as 28 Feb
         return current_date.replace(year=current_date.year - 100, month=2, day=28)
 
 
@@ -139,52 +144,56 @@ def is_customer_id_existed(id):
     """
     Check whether the customer id is already existed"""
 
-    ids = [c[0] for c in customers]
-    return id in ids
+    return id in [c[0] for c in customers]
 
 
 def is_tour_group_existed(index, tour_group_list):
     """
-    Check whether the tour group which user selects is within the available groups"""
+    Check whether the tour group which user selects is within the available groups.
+    User must input a tour group index within this range."""
 
     return index >= 0 and index < len(tour_group_list)
 
 
 def is_customer_already_in_tour_group(customer_id, index, tour_group_list):
     """
-    Check whether the customer id is already existed in the tour group"""
+    Check whether the customer id is already existed in the tour group.
+    see data structure of tour_group_list in function get_tour_groups"""
 
     return customer_id in tour_group_list[index].member_list
 
 
 def is_customer_age_valid(customer_id, index, tour_group_list):
     """
-    Check whether the age of the customer is equal or larger than the restricted age"""
+    Check whether the age of the customer is equal or larger than the restricted age.
+    see data structure of tour_group_list in function get_tour_groups"""
 
-    date_of_birth = [c[3] for c in customers if c[0] == customer_id][0]
-    age_restricted = tour_group_list[index].age_restriction
+    date_of_birth = [c[3] for c in customers if c[0] == customer_id][0] # get the birth date of the customer
+    age_restricted = tour_group_list[index].age_restriction             # get the restricted age of the tour group
 
     return get_customer_age(date_of_birth) >= age_restricted
 
 
-def get_customer_age(birthday):
+def get_customer_age(birthdate):
     """
     Get the customer's age"""
 
     today = date.today()
-    return today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
+    # get the customer's age
+    return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
 
 def _add_customer_to_tourgroup(customer_id, index, tour_group_list):
     """
-    Add the customer into the tour group selected"""
+    Add the customer into the tour group selected.
+    see data structure of tour_group_list in function get_tour_groups"""
 
-    group_date = tour_group_list[index].header.date
-    new_member_list = tour_group_list[index].member_list + [customer_id]
+    group_date = tour_group_list[index].header.date                         # get tour group date
+    new_member_list = tour_group_list[index].member_list + [customer_id]    # get new customer id into customer member list
 
-    current_groups = tours[tour_group_list[index].header.name]["groups"]
+    current_groups = tours[tour_group_list[index].header.name]["groups"]    # get the "groups" dict within the tour
 
-    current_groups.update({
+    current_groups.update({                                                 # udpate the "groups" dict to add new customer
         group_date: new_member_list
     })
 
@@ -222,9 +231,10 @@ def get_tour_groups(name_descending=False, date_descending=False):
 
 def display_customer_by_tour_group(tour_group_list):
     """
-    Display customers grouped by tour group"""
+    Display customers grouped by tour group.
+    see data structure of tour_group_list in function get_tour_groups"""
 
-    customers_dict = get_customers_dict(customers)
+    customers_dict = get_customers_dict(customers)  # convert customer list into dict, customer id as the key
 
     # Calculate max length of tour name
     max_length = max([len(tour_group.header.name) for tour_group in tour_group_list])
@@ -234,20 +244,26 @@ def display_customer_by_tour_group(tour_group_list):
 
         # print("-"*106)
         print(" Tour  ", end="")
-        display_tour_group_header(tg.header.name, tg.header.date, max_length)
+        display_tour_group_header(tg.header.name, tg.header.date, max_length)   # print tour group header (name, date)
 
-        if len(tg.member_list) == 0:
-            display_customer_list([])
-        else:
-            customer_list = []
-            for c in tg.member_list:
-                customer_list.append(customers_dict[c])
-            display_customer_list(customer_list)
+        customer_list = []                                                      # get customer list with full customer info
+        for c in tg.member_list:
+            customer_list.append(customers_dict[c])
+
+        display_customer_list(customer_list)                                    # display customer list
+
+        # if len(tg.member_list) == 0:
+        #     display_customer_list([])                                           
+        # else:
+        #     customer_list = []
+        #     for c in tg.member_list:
+        #         customer_list.append(customers_dict[c])
+        #     display_customer_list(customer_list)
 
 
 def display_tour_group_header(tour_name, tour_date, max_length):
     """
-    Display tour group header"""
+    Display tour group header as tour name, tour date, tour month."""
 
     format_str = "\033[94m{: <" + str(max_length) + "}\033[0m        Date  \033[96m{: <15}\033[0m  Month  \033[95m{: <40}\033[0m "
     display_formatted_row([tour_name, tour_date.strftime("%d %b %Y"), tour_date.strftime("%b %Y"), ], format_str)
@@ -265,9 +281,9 @@ def display_tour_details(tours):
         display_formatted_row([tour[0]], cyan(" {: <33} |"))
         print("-"*52)
         print("| Destinations |", end="")
-        first_line_mark = True
+        first_line_mark = True                              # mark whether this is the first itinerary in that tour
         for itinerary in sorted(tour[1]["itinerary"]):
-            if not first_line_mark:
+            if not first_line_mark:                         # only display tour name one time for multiple itinerary
                 print("|              |", end="")
             display_formatted_row([itinerary], green(" {: <33} |"))
             first_line_mark = False
@@ -293,9 +309,9 @@ def get_all_destinations_with_tour():
     for d in destinations:
         tour_list = []
         for tour in tours.items():
-            if d in tour[1]["itinerary"]:
+            if d in tour[1]["itinerary"]:           # check whether this destination is within that tour
                 tour_list.append(tour[0])
-        tour_list = sorted(tour_list)
+        tour_list = sorted(tour_list)               # sort tour by tour name
         destinations_tour.append((d, tour_list))
     
     return destinations_tour
@@ -311,17 +327,17 @@ def display_destinations_with_tour(destintions):
     format_str = "| \033[96m{: <20}\033[0m | \033[92m{: <35}\033[0m |"
 
     print("-"*62)
-    display_formatted_row(["Destination", "Tour"], format_str_header)
+    display_formatted_row(["Destination", "Tour"], format_str_header)       # display header (Destination, Tour)
     print("-"*62)
 
     for destination, tour_list in destintions:
-        first_line_mark = True
+        first_line_mark = True                                              # remark whether this is the first tour that visits the destination
         for tour in tour_list:
             if first_line_mark:
                 display_formatted_row([destination, tour], format_str)
                 first_line_mark = False
             else:
-                display_formatted_row(["", tour], format_str)
+                display_formatted_row(["", tour], format_str)               # display distination only one time if multiple tours visit it
     
     print("-"*62)
 
@@ -345,11 +361,11 @@ def get_user_input(prompt, validation=None):
         if input_string.lower() == ":q":
             return ":q"
 
-        if input_string == "":
+        if input_string == "":                                  # check whether the input is empty
             print_warning("Input can not be empty.")
             continue
 
-        elif validation == "date":
+        elif validation == "date":                              # check whether the input is a valid date
             validation_result = is_valid_date(input_string)
             if type(validation_result) != date:
                 print_warning(validation_result)
@@ -357,7 +373,7 @@ def get_user_input(prompt, validation=None):
 
             input_string = validation_result
 
-        elif validation == "email":
+        elif validation == "email":                             # check whether the input is a valid email format
             if not is_email(input_string):
                 print_warning("Incorrect email format")
                 continue
@@ -369,7 +385,7 @@ def _add_new_customer(new_customer):
     """
     Add new customer into customers"""
 
-    customers.append([unique_id(), *new_customer])
+    customers.append([unique_id(), *new_customer])              # add a new customer into customers list
 
 
 # ----------------------- End of Internal functions -----------------------
@@ -384,7 +400,7 @@ def list_all_customers():
     This is an example of how to produce basic output."""
 
     print()
-    # Move display code into a function so that it could be reused by other functions
+    # display function to display customers. so that it could be reused by other functions
     display_customer_list(customers)
 
     input("\nPress Enter to continue.")
@@ -394,10 +410,8 @@ def list_customers_by_tourgroup():
     """
     Lists Customer details (including birth date), grouped by tour then tour group."""
 
-    # Get tour groups
+    # Get tour groups, see data structure in function get_tour_groups
     tour_group_list = get_tour_groups()
-    
-    # print(tour_group_list)
     
     # Display tour groups
     display_customer_by_tour_group(tour_group_list)
@@ -409,7 +423,7 @@ def list_tour_details():
     """
     List the tours and all locations visited."""
     
-    # Sort tours
+    # Sort tours by tour name
     tours_sorted = sorted(tours.items(), key=lambda x: x[0])
     
     # Display sorted tours
@@ -435,11 +449,11 @@ def add_customer_to_tourgroup():
         
         try:
             customer_id = int(customer_id)
-            if not is_customer_id_existed(customer_id):
+            if not is_customer_id_existed(customer_id):     # check whether the customer id already existed
                 print_warning("Customer ID not existing, please try again (input :q to quit).\n")
             else:
                 break
-        except ValueError:
+        except ValueError:                                  # input is not an integer
             print_warning("Please input an integer.\n")
     
     # Get tour groups
@@ -458,19 +472,19 @@ def add_customer_to_tourgroup():
 
         try:
             index = int(index) - 1
-            if not is_tour_group_existed(index, tour_group_list):
+            if not is_tour_group_existed(index, tour_group_list):                           # check whether the tour group id input is existed
                 print_warning("Tour group number is not correct. Please try again (input :q to quit).\n")
 
-            elif is_customer_already_in_tour_group(customer_id, index, tour_group_list):
+            elif is_customer_already_in_tour_group(customer_id, index, tour_group_list):    # check whether the customer already existed in the group
                 print_warning("Customer already in this tour group. Please try again (input :q to quit).\n")
 
-            elif not is_customer_age_valid(customer_id, index, tour_group_list):
+            elif not is_customer_age_valid(customer_id, index, tour_group_list):            # check whether customer age is valid
                 print_warning("Customer is younger than the age restricted. Please try again (input :q to quit).\n")
 
             else:
                 break
 
-        except ValueError:
+        except ValueError:                                                                  # input is not an integer
             print_warning("Please input an integer.\n")
 
     # Internal function to add cutomer into tour group
@@ -483,7 +497,9 @@ def add_customer_to_tourgroup():
 
 def add_new_customer():
     """
-    Add a new customer to the customer list."""
+    Add a new customer to the customer list.
+    Validations are within the function get_user_input.
+    """
 
     # User can add new customer repeatedly
     while True:
@@ -512,8 +528,8 @@ def list_all_destinations():
     """
     List all destinations that ATL Visit and the tours that visit them"""
 
-    destinations = get_all_destinations_with_tour()
-    display_destinations_with_tour(destinations)
+    destinations = get_all_destinations_with_tour()     # get all destinations with a tour list which visits them
+    display_destinations_with_tour(destinations)        # display the destinations with tour names
 
     input("\nPress Enter to continue.")
 
