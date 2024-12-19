@@ -91,7 +91,7 @@ def display_tour_groups(tour_group_list):
     print("-"*96)
 
     for index, tg in enumerate(tour_group_list):
-        display_formatted_row([index + 1, tg.title.name, tg.title.date.strftime("%d %b %Y")], format_str)
+        display_formatted_row([index + 1, tg.header.name, tg.header.date.strftime("%d %b %Y")], format_str)
     
     print("-"*96)
 
@@ -143,11 +143,11 @@ def is_customer_id_existed(id):
     return id in ids
 
 
-def is_tour_group_existed(index, tour_groups):
+def is_tour_group_existed(index, tour_group_list):
     """
     Check whether the tour group which user selects is within the available groups"""
 
-    return index >= 0 and index < len(tour_groups)
+    return index >= 0 and index < len(tour_group_list)
 
 
 def is_customer_already_in_tour_group(customer_id, index, tour_group_list):
@@ -179,10 +179,10 @@ def _add_customer_to_tourgroup(customer_id, index, tour_group_list):
     """
     Add the customer into the tour group selected"""
 
-    group_date = tour_group_list[index].title.date
+    group_date = tour_group_list[index].header.date
     new_member_list = tour_group_list[index].member_list + [customer_id]
 
-    current_groups = tours[tour_group_list[index].title.name]["groups"]
+    current_groups = tours[tour_group_list[index].header.name]["groups"]
 
     current_groups.update({
         group_date: new_member_list
@@ -191,31 +191,31 @@ def _add_customer_to_tourgroup(customer_id, index, tour_group_list):
 
 def get_tour_groups(name_descending=False, date_descending=False):
     """
-    Re-structure tours data, grouped by a namedtuple named title = (tour_name, tour_date), and sorted by tour_name ascending, tour_date ascending.
+    Re-structure tours data, grouped by a namedtuple with name header = (tour_name, tour_date), and sorted by tour_name ascending, tour_date ascending.
     Because pair of (tour_name, tour_date) is unique.
     
     Finally the data structure will be list of following namedtuple:
-    (title, age_restriction, member_list) -> (("name" "date"), age_restriction, member_list) -> (("UK", date(2023,7,10)), 0, [816,923,343])
+    (header, age_restriction, member_list) -> (("name" "date"), age_restriction, member_list) -> (("UK", date(2023,7,10)), 0, [816,923,343])
     
     name_descending & date_descending controls order by direction (ascending or descending)"""
 
     tour_group_list = []
-    tour_group = namedtuple("TourGroup", "title age_restriction member_list")
-    tour_group_title = namedtuple("TourGroupTitle", "name date")
+    tour_group = namedtuple("TourGroup", "header age_restriction member_list")
+    tour_group_header = namedtuple("TourGroupHeader", "name date")              # header is embedded named tuple
 
 
-    # Transform tours data into a list of namedtuple ("title age_restriction memeber_list"), where title is another namedtuple ("name date")
+    # Transform tours data into a list of namedtuple ("header age_restriction memeber_list"), where header is another namedtuple ("name date")
     # Finally: ("("name date") age_restriction member_list") -> (("WestEurope", date(2023,8,15)), 0, [810,801])
     for tour in tours.items():
         for group in tour[1]["groups"].items():
-            title = tour_group_title(tour[0], group[0])
-            tour_group_list.append(tour_group(title, tour[1]["age_restriction"], group[1]))
+            header = tour_group_header(tour[0], group[0])
+            tour_group_list.append(tour_group(header, tour[1]["age_restriction"], group[1]))
     
     # sort by group date ascending (use reverse=True for descending)
-    tour_group_list = sorted(tour_group_list, key=lambda x: x.title.date, reverse=date_descending)
+    tour_group_list = sorted(tour_group_list, key=lambda x: x.header.date, reverse=date_descending)
 
     # sort by group name ascending (use reversed=True for descending)
-    tour_group_list = sorted(tour_group_list, key=lambda x: x.title.name, reverse=name_descending)
+    tour_group_list = sorted(tour_group_list, key=lambda x: x.header.name, reverse=name_descending)
 
     return tour_group_list
 
@@ -227,14 +227,14 @@ def display_customer_by_tour_group(tour_group_list):
     customers_dict = get_customers_dict(customers)
 
     # Calculate max length of tour name
-    max_length = max([len(tour_group.title.name) for tour_group in tour_group_list])
+    max_length = max([len(tour_group.header.name) for tour_group in tour_group_list])
 
     for tg in tour_group_list:
         print()
 
         # print("-"*106)
         print(" Tour  ", end="")
-        display_tour_group_header(tg.title.name, tg.title.date, max_length)
+        display_tour_group_header(tg.header.name, tg.header.date, max_length)
 
         if len(tg.member_list) == 0:
             display_customer_list([])
