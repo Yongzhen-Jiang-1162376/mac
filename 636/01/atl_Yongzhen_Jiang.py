@@ -59,13 +59,15 @@ def display_customer_list(customers):
     print("-"*106)
 
     if len(customers) == 0:
-        display_formatted_row(["No Customer"], "| {: <102} |")
+        # Display None Customer if no customer is within this group
+        display_formatted_row(["None Customer"], "| {: <102} |")
 
     else:
-        # sort customers by family name and first name
+        # sort customers by family name first and then by first name
         customers = sorted(customers, key=lambda c: c[1])
         customers = sorted(customers, key=lambda c: c[2])
         
+        # display customer record
         for customer in customers:
             id = customer[0]
             first_name = customer[1]
